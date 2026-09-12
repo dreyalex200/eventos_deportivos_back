@@ -1,0 +1,875 @@
+{
+	"info": {
+		"_postman_id": "e8a1f2b3-c4d5-4e6f-a7b8-c9d0e1f2a3b4",
+		"name": "drey/EventSports",
+		"description": "Postman Collection for api_events_sports (Sports Events Management Backend) built with Spring Boot 3.4.3 and Java 21 adhering to Hexagonal Architecture.\n\nSeparated into Anonymous (Authentication, Health) and Protected (Authenticated with JWT Bearer token) folders.\nAuthentication tests automatically populate the `auth_token` collection variable upon successful login.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Anonymous",
+			"description": "Endpoints accessible without authentication (public/anonymous).",
+			"item": [
+				{
+					"name": "Auth",
+					"description": "Authentication endpoints for user and administrator login.",
+					"item": [
+						{
+							"name": "Login - Administrator (Success)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response has success envelope and token\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"    pm.expect(jsonData.status).to.eql(\"success\");",
+											"    pm.expect(jsonData.data).to.have.property(\"accessToken\");",
+											"    pm.expect(jsonData.data.tokenType).to.eql(\"Bearer\");",
+											"    pm.expect(jsonData.data.user.email).to.eql(\"admin@sportsevents.com\");",
+											"    ",
+											"    // Automatically update collection auth_token variable",
+											"    pm.collectionVariables.set(\"auth_token\", jsonData.data.accessToken);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								},
+								"description": "Authenticates the administrator user using email and password. Returns JWT bearer access token and user profile."
+							},
+							"response": [
+								{
+									"name": "200 OK - Login Successful",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"admin@sportsevents.com\",\n    \"password\": \"Prueba123+\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/auth/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"body": "{\n    \"success\": true,\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n        \"tokenType\": \"Bearer\",\n        \"expiresIn\": 86400,\n        \"user\": {\n            \"id\": 1,\n            \"email\": \"admin@sportsevents.com\",\n            \"roles\": [\n                \"ADMIN\"\n            ]\n        }\n    },\n    \"timestamp\": \"2026-09-12T10:17:44Z\",\n    \"requestId\": \"195eabcd-17c4-4e39-a53c-bd42cea4dac2\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login - Invalid Password (401)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test(\"Error code is INVALID_CREDENTIALS\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"error\");",
+											"    pm.expect(jsonData.error.code).to.eql(\"INVALID_CREDENTIALS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"WrongPassword\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								},
+								"description": "Verifies that incorrect credentials reject authentication with 401 Unauthorized."
+							},
+							"response": [
+								{
+									"name": "401 Unauthorized - Invalid Password",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"admin@sportsevents.com\",\n    \"password\": \"WrongPassword\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/auth/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"body": "{\n    \"status\": \"error\",\n    \"error\": {\n        \"code\": \"INVALID_CREDENTIALS\",\n        \"details\": \"Invalid email or password\"\n    },\n    \"timestamp\": \"2026-09-12T10:17:45Z\",\n    \"requestId\": \"b27dc548-e7f9-4d2b-acab-dc7f55e8477d\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login - Unknown User (401)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test(\"Error code is INVALID_CREDENTIALS\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"error\");",
+											"    pm.expect(jsonData.error.code).to.eql(\"INVALID_CREDENTIALS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"unknown@sportsevents.com\",\n    \"password\": \"Prueba123+\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								},
+								"description": "Verifies that non-existent accounts reject authentication with generic 401 Unauthorized."
+							},
+							"response": [
+								{
+									"name": "401 Unauthorized - Unknown User",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"unknown@sportsevents.com\",\n    \"password\": \"Prueba123+\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/auth/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"body": "{\n    \"status\": \"error\",\n    \"error\": {\n        \"code\": \"INVALID_CREDENTIALS\",\n        \"details\": \"Invalid email or password\"\n    },\n    \"timestamp\": \"2026-09-12T10:17:45Z\",\n    \"requestId\": \"21b00612-4e3f-4c44-86ed-a00acff192a2\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login - Validation Error Blank Email (400)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test(\"Error code is VALIDATION_ERROR\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"error\");",
+											"    pm.expect(jsonData.error.code).to.eql(\"VALIDATION_ERROR\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"\",\n    \"password\": \"Prueba123+\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								},
+								"description": "Validation test: empty email returns 400 Bad Request."
+							},
+							"response": [
+								{
+									"name": "400 Bad Request - Missing Email",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"\",\n    \"password\": \"Prueba123+\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/auth/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"body": "{\n    \"status\": \"error\",\n    \"error\": {\n        \"code\": \"VALIDATION_ERROR\",\n        \"details\": \"Email is required\"\n    },\n    \"timestamp\": \"2026-09-12T10:17:45Z\",\n    \"requestId\": \"f1d04126-8538-4b88-8b38-495b6109e0d7\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login - Validation Error Invalid Format (400)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test(\"Error code is VALIDATION_ERROR\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"error\");",
+											"    pm.expect(jsonData.error.code).to.eql(\"VALIDATION_ERROR\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"not-an-email-address\",\n    \"password\": \"Prueba123+\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								},
+								"description": "Validation test: non-email format returns 400 Bad Request."
+							},
+							"response": [
+								{
+									"name": "400 Bad Request - Invalid Email Format",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"not-an-email-address\",\n    \"password\": \"Prueba123+\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/auth/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"body": "{\n    \"status\": \"error\",\n    \"error\": {\n        \"code\": \"VALIDATION_ERROR\",\n        \"details\": \"Email must be a valid email address\"\n    },\n    \"timestamp\": \"2026-09-12T10:17:45Z\",\n    \"requestId\": \"7f5dae81-20d9-45a1-850f-cd6f5c18d7d9\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "System & Actuator",
+					"description": "System monitoring, health checks, and actuator endpoints.",
+					"item": [
+						{
+							"name": "Get Health Status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200 or 503\", function () {",
+											"    pm.expect([200, 503]).to.include(pm.response.code);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/actuator/health",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"actuator",
+										"health"
+									]
+								},
+								"description": "Spring Boot Actuator health status check."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Info",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/actuator/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"actuator",
+										"info"
+									]
+								},
+								"description": "Spring Boot Actuator build and environment information."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Protected",
+			"description": "Protected endpoints requiring JWT Bearer token authentication (`Authorization: Bearer <token>`). Uses the `{{auth_token}}` collection variable.",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Events",
+					"description": "Sports events catalog and management endpoints.",
+					"item": [
+						{
+							"name": "List Events",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/events?page=0&size=10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Page index (0-based)"
+										},
+										{
+											"key": "size",
+											"value": "10",
+											"description": "Number of items per page"
+										}
+									]
+								},
+								"description": "Lists sports events with pagination. Requires valid Bearer JWT."
+							},
+							"response": [
+								{
+									"name": "200 OK - Events List",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/events?page=0&size=10",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"events"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "size",
+													"value": "10"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"body": "{\n    \"success\": true,\n    \"status\": \"success\",\n    \"message\": \"Events retrieved successfully\",\n    \"data\": {\n        \"items\": [],\n        \"page\": 0,\n        \"size\": 10,\n        \"totalElements\": 0,\n        \"totalPages\": 0\n    },\n    \"timestamp\": \"2026-09-12T10:20:00Z\",\n    \"requestId\": \"d1e2f3a4-b5c6-7d8e-9f0a-1b2c3d4e5f6a\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Event By ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/events/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"events",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1",
+											"description": "Event ID"
+										}
+									]
+								},
+								"description": "Retrieves detailed information for a specific sports event."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Event",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Torneo de Fútbol 2026\",\n    \"description\": \"Campeonato de fútbol aficionado categoría libre\",\n    \"sportType\": \"FOOTBALL\",\n    \"location\": \"Estadio Central\",\n    \"startDate\": \"2026-10-15T09:00:00\",\n    \"endDate\": \"2026-10-20T18:00:00\",\n    \"maxParticipants\": 16\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/events",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"events"
+									]
+								},
+								"description": "Creates a new sports event. Restricted to users with ADMIN role."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Event",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Torneo de Fútbol 2026 (Actualizado)\",\n    \"description\": \"Campeonato actualizado\",\n    \"sportType\": \"FOOTBALL\",\n    \"location\": \"Estadio Municipal\",\n    \"startDate\": \"2026-10-15T10:00:00\",\n    \"endDate\": \"2026-10-20T19:00:00\",\n    \"maxParticipants\": 20\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/events/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"events",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1",
+											"description": "Event ID"
+										}
+									]
+								},
+								"description": "Updates an existing event. Restricted to ADMIN role."
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Event",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/events/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"events",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1",
+											"description": "Event ID"
+										}
+									]
+								},
+								"description": "Deletes or soft-deletes a sports event. Restricted to ADMIN role."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Users",
+					"description": "User management and profile endpoints.",
+					"item": [
+						{
+							"name": "Get User Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/users/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1",
+											"description": "User ID"
+										}
+									]
+								},
+								"description": "Retrieves user profile details by ID."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:9000",
+			"type": "string",
+			"description": "Base URL of the api_events_sports backend service"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string",
+			"description": "JWT access token populated automatically by the Login request"
+		},
+		{
+			"key": "admin_email",
+			"value": "admin@sportsevents.com",
+			"type": "string",
+			"description": "Default administrator email seeded in the database"
+		},
+		{
+			"key": "admin_password",
+			"value": "Prueba123+",
+			"type": "string",
+			"description": "Default administrator password"
+		}
+	]
+}

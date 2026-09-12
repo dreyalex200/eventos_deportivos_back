@@ -1,0 +1,100 @@
+spring:
+  application:
+    name: api_events_sports
+    version: ${APP_VERSION:1.0.0}
+    environment: ${APP_ENV:development}
+    uuid: ${APP_UUID:d2883651-1d92-433c-93ff-55d90670950b}
+    url: ${APP_URL:http://localhost:9000}
+
+  profiles:
+    active: ${database.provider:mysql}
+
+  rabbitmq:
+    enabled: ${RABBITMQ_ENABLED:false}
+    host: ${RABBITMQ_HOST:iris.drey.com}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:infrastructure@drey.com}
+    password: ${RABBITMQ_PASSWORD:cJ:#TGy36L8d4N;S}
+    virtual-host: ${RABBITMQ_VHOST:/}
+
+  mail:
+    host: ${MAIL_HOST:smtp.zoho.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:no-reply@drey.com}
+    password: ${MAIL_PASSWORD:V.FcJh_281%Sz!IQ%ddf}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: ${MAIL_SMTP_SSL_ENABLE:false}
+
+  flyway:
+    enabled: false
+    # locations: filesystem:scripts/db/migrations/${database.provider:mysql}
+    # baseline-on-migrate: true
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+app:
+  api:
+    base-path: ${APP_API_BASE_PATH:/api/v1}
+  security:
+    jwt:
+      secret: ${JWT_SECRET:3cfa76ef14937c1c0ea519f8fc057a80fcd04a74ac2b9bd91000223f108f3e58}
+      expiration: ${JWT_EXPIRATION:86400}
+  assets:
+    base-url: ${APP_ASSETS_BASE_URL:https://atlas-api.drey.com/arcadion-realm/assets/enterprise}
+  email:
+    from-email: ${APP_EMAIL_FROM_EMAIL:no-reply@drey.com}
+    from-name: ${APP_EMAIL_FROM_NAME:drey}
+
+providers:
+  smtp:
+    enabled: ${SMTP_ENABLED:true}
+  sendgrid:
+    enabled: ${SENDGRID_ENABLED:false}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics, liveness, readiness
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+server:
+  port: ${SERVER_PORT:9000}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/}
+  error:
+    whitelabel:
+      enabled: false
+
+bird:
+  api:
+    access-key: ${BIRD_API_ACCESS_KEY:}
+    workspace-id: ${BIRD_WORKSPACE_ID:1703a446-f76d-4de6-bcba-c564826fcd95}
+    channels:
+      sms: ${BIRD_CHANNEL_SMS:52e1b56d-5932-52cb-9cd9-7868017bef2f}
+      whatsapp: ${BIRD_CHANNEL_WHATSAPP:708525ee-c3f4-5f89-b61a-b5b5cd35c9d0}

@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  api_messaging:
+    build:
+      context: ..
+      dockerfile: .deploy/Dockerfile
+    image: propietarios/api-messaging:latest
+    container_name: api_messaging
+    env_file:
+      - ../.env
+    networks:
+      - propietarios_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_api_messaging
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api_messaging:
+        condition: service_healthy
+    networks:
+      - propietarios_net
+    restart: unless-stopped
+
+networks:
+  propietarios_net:
+    driver: bridge
