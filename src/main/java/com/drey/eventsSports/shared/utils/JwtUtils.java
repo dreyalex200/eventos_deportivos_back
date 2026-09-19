@@ -38,20 +38,38 @@ public class JwtUtils {
     }
 
     public String generateToken(Long userId, String email, String username, List<String> roles) {
-        return generateToken(userId, email, username, roles, this.expirationSeconds);
+        return generateToken(userId, email, username, roles, Collections.emptyList(), this.expirationSeconds);
     }
 
     public String generateToken(Long userId, String email, String username, List<String> roles, long customExpirationSeconds) {
+        return generateToken(userId, email, username, roles, Collections.emptyList(), customExpirationSeconds);
+    }
+
+    public String generateToken(Long userId, String email, String username, List<String> roles, List<String> permissions) {
+        return generateToken(userId, email, username, roles, permissions, this.expirationSeconds);
+    }
+
+    public String generateToken(Long userId, String email, String username, List<String> roles, List<String> permissions, long customExpirationSeconds) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + (customExpirationSeconds * 1000));
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
         claims.put("username", username);
-        claims.put("roles", roles);
+        claims.put("roles", roles != null ? roles : Collections.emptyList());
         if (roles != null && !roles.isEmpty()) {
             claims.put(SecurityConstants.CLAIM_ROLE, roles.get(0));
         }
+        claims.put("permissions", permissions != null ? permissions : Collections.emptyList());
+
+        Map<String, Object> authObj = new HashMap<>();
+        authObj.put("roles", roles != null ? roles : Collections.emptyList());
+        authObj.put("permissions", permissions != null ? permissions : Collections.emptyList());
+        if (roles != null && !roles.isEmpty()) {
+            authObj.put("role", roles.get(0));
+        }
+        claims.put("authorization", authObj);
+
         claims.put(SecurityConstants.CLAIM_SCOPE_ID, UUID.randomUUID().toString());
 
         return Jwts.builder()
@@ -106,6 +124,15 @@ public class JwtUtils {
                     .map(Object::toString)
                     .collect(Collectors.toList());
         }
+        Object authObj = claims.get("authorization");
+        if (authObj instanceof Map<?, ?> authMap) {
+            Object nestedRoles = authMap.get("roles");
+            if (nestedRoles instanceof List<?>) {
+                return ((List<?>) nestedRoles).stream()
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
+            }
+        }
         String singleRole = claims.get(SecurityConstants.CLAIM_ROLE, String.class);
         if (singleRole != null) {
             return List.of(singleRole);
@@ -113,8 +140,31 @@ public class JwtUtils {
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("unchecked")
+    public List<String> getPermissionsFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        Object permObj = claims.get("permissions");
+        if (permObj instanceof List<?>) {
+            return ((List<?>) permObj).stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+        }
+        Object authObj = claims.get("authorization");
+        if (authObj instanceof Map<?, ?> authMap) {
+            Object nestedPerms = authMap.get("permissions");
+            if (nestedPerms instanceof List<?>) {
+                return ((List<?>) nestedPerms).stream()
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
+            }
+        }
+        return Collections.emptyList();
+    }
+
     public List<GrantedAuthority> getAuthoritiesFromToken(String token) {
         List<String> roles = getRolesFromToken(token);
+        List<String> permissions = getPermissionsFromToken(token);
+
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (String role : roles) {
             authorities.add(new SimpleGrantedAuthority(role));
@@ -122,6 +172,14 @@ public class JwtUtils {
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
             }
         }
+
+        for (String permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission));
+            if (!permission.startsWith("PERMISSION_")) {
+                authorities.add(new SimpleGrantedAuthority("PERMISSION_" + permission));
+            }
+        }
+
         return authorities;
     }
 

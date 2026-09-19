@@ -7,13 +7,17 @@ USE sports_events;
 -- BCrypt hash for password 'Prueba123+'
 SET @admin_email = 'admin@sportsevents.com';
 SET @admin_username = 'admin';
-SET @admin_password_hash = '$2a$10$w09k2tWfZ0pW7iF2w6sSGeOeV9KzJgJ1zF3v4o2V7a0oY.R3jK6k6';
+SET @admin_password_hash = '$2a$10$vW/3HAb0AfAGATzWlptP1e8oifwxR3gVd1FWO1/YhQkKxLCf0oi1q';
 
 INSERT INTO users (username, password_hash, email, first_name, last_name, phone, status)
 SELECT @admin_username, @admin_password_hash, @admin_email, 'Admin', 'SportsEvents', '+573001234567', 1
 WHERE NOT EXISTS (
     SELECT 1 FROM users WHERE email = @admin_email
 );
+
+UPDATE users
+SET password_hash = @admin_password_hash
+WHERE email = @admin_email;
 
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id

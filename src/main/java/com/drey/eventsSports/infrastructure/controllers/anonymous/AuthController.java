@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping({"/api/v1/auth", "/api/v1/auth/anonymous"})
 public class AuthController {
 
     private final LoginUseCase loginUseCase;
@@ -27,7 +27,7 @@ public class AuthController {
         this.loginUseCase = loginUseCase;
     }
 
-    @PostMapping("/login")
+    @PostMapping({"/login", ""})
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResult result = loginUseCase.login(new LoginCommand(request.email(), request.password()));
 

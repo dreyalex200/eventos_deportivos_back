@@ -6,6 +6,7 @@ import com.drey.eventsSports.domain.ports.outbound.TokenProviderPort;
 import com.drey.eventsSports.shared.utils.JwtUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,9 @@ public class JwtTokenProviderAdapter implements TokenProviderPort {
                 .map(Role::getCode)
                 .collect(Collectors.toList());
 
-        return jwtUtils.generateToken(user.getId(), user.getEmail(), user.getUsername(), roles);
+        List<String> permissions = new ArrayList<>(user.getEffectivePermissions());
+
+        return jwtUtils.generateToken(user.getId(), user.getEmail(), user.getUsername(), roles, permissions);
     }
 
     @Override
@@ -33,7 +36,9 @@ public class JwtTokenProviderAdapter implements TokenProviderPort {
                 .map(Role::getCode)
                 .collect(Collectors.toList());
 
-        return jwtUtils.generateToken(user.getId(), user.getEmail(), user.getUsername(), roles, expirationSeconds);
+        List<String> permissions = new ArrayList<>(user.getEffectivePermissions());
+
+        return jwtUtils.generateToken(user.getId(), user.getEmail(), user.getUsername(), roles, permissions, expirationSeconds);
     }
 
     @Override

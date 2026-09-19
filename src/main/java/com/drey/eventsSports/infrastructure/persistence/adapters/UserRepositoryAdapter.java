@@ -1,5 +1,6 @@
 package com.drey.eventsSports.infrastructure.persistence.adapters;
 
+import com.drey.eventsSports.domain.model.entities.Permission;
 import com.drey.eventsSports.domain.model.entities.Role;
 import com.drey.eventsSports.domain.model.entities.User;
 import com.drey.eventsSports.domain.ports.outbound.UserRepository;
@@ -49,6 +50,12 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public boolean existsByUsername(String username) {
+        return springDataUserRepository.existsByUsername(username);
+    }
+
+    @Override
     @Transactional
     public User save(User user) {
         UserJpaEntity entity = toEntity(user);
@@ -57,11 +64,31 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     private User toDomain(UserJpaEntity entity) {
-        Set<Role> roles = entity.getRoles() != null
-                ? entity.getRoles().stream()
-                .map(r -> new Role(r.getId(), r.getCode(), r.getName(), r.getDescription(), r.getStatus()))
-                .collect(Collectors.toSet())
-                : new HashSet<>();
+        Set<Role> roles = new HashSet<>();
+        if (entity.getRoles() != null) {
+            for (RoleJpaEntity r : entity.getRoles()) {
+                Set<Permission> permissions = new HashSet<>();
+                if (r.getPermissions() != null) {
+                    for (var p : r.getPermissions()) {
+                        permissions.add(new Permission(
+                                p.getId(),
+                                p.getCode(),
+                                p.getName(),
+                                p.getDescription(),
+                                p.getStatus()
+                        ));
+                    }
+                }
+                roles.add(new Role(
+                        r.getId(),
+                        r.getCode(),
+                        r.getName(),
+                        r.getDescription(),
+                        r.getStatus(),
+                        permissions
+                ));
+            }
+        }
 
         return User.builder()
                 .id(entity.getId())

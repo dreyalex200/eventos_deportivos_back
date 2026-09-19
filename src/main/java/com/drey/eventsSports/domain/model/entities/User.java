@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class User {
     private final Long id;
@@ -98,7 +99,29 @@ public class User {
             return false;
         }
         return roles.stream()
+                .filter(Role::isActive)
                 .anyMatch(r -> roleCode.equalsIgnoreCase(r.getCode()));
+    }
+
+    public Set<String> getEffectivePermissions() {
+        if (roles == null) {
+            return Collections.emptySet();
+        }
+        return roles.stream()
+                .filter(Role::isActive)
+                .flatMap(r -> r.getPermissions().stream())
+                .filter(Permission::isActive)
+                .map(Permission::getCode)
+                .collect(Collectors.toSet());
+    }
+
+    public boolean hasPermission(String permissionCode) {
+        if (permissionCode == null || roles == null) {
+            return false;
+        }
+        return roles.stream()
+                .filter(Role::isActive)
+                .anyMatch(r -> r.hasPermission(permissionCode));
     }
 
     public static class Builder {
@@ -155,8 +178,23 @@ public class User {
             return this;
         }
 
+        public Builder status(String statusStr) {
+            if ("active".equalsIgnoreCase(statusStr)) {
+                this.status = 1;
+            } else if ("inactive".equalsIgnoreCase(statusStr)) {
+                this.status = 0;
+            } else {
+                try {
+                    this.status = Integer.parseInt(statusStr);
+                } catch (NumberFormatException ignored) {
+                    this.status = 1;
+                }
+            }
+            return this;
+        }
+
         public Builder roles(Set<Role> roles) {
-            this.roles = roles;
+            this.roles = roles != null ? roles : new HashSet<>();
             return this;
         }
 

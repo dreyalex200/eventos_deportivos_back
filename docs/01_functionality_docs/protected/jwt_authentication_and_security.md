@@ -38,6 +38,20 @@ El token emitido por el endpoint de login utiliza el algoritmo `HS256` (HMAC con
   "roles": [
     "ADMIN"
   ],
+  "permissions": [
+    "USERS_CREATE",
+    "USERS_READ"
+  ],
+  "authorization": {
+    "role": "ADMIN",
+    "roles": [
+      "ADMIN"
+    ],
+    "permissions": [
+      "USERS_CREATE",
+      "USERS_READ"
+    ]
+  },
   "email": "admin@sportsevents.com",
   "username": "admin",
   "iat": 1789226264,
@@ -52,12 +66,15 @@ El token emitido por el endpoint de login utiliza el algoritmo `HS256` (HMAC con
 | `sub` | `String` | Identificador único del usuario (Subject). Corresponde al ID de la entidad `User`. |
 | `email` | `String` | Correo electrónico del usuario autenticado. |
 | `username` | `String` | Nombre de usuario o identificador de inicio de sesión. |
-| `roles` | `List<String>` | Lista de roles asignados al usuario (ej. `["ADMIN"]`). Mapeados en Spring Security a `ROLE_ADMIN`. |
+| `roles` | `List<String>` | Lista de roles asignados al usuario (ej. `["ADMIN"]`). Mapeados en Spring Security a `ROLE_ADMIN` y `ADMIN`. |
+| `permissions` | `List<String>` | Lista de permisos efectivos otorgados al usuario (ej. `["USERS_CREATE", "USERS_READ"]`). Mapeados a authorities en Spring Security. |
+| `authorization` | `Object` | Objeto estructurado que contiene los roles y permisos efectivos para interoperabilidad con AuthGuard. |
 | `scope_id` | `String` | UUID de ámbito o tenant para segmentación multi-inquilino. |
 | `iat` | `NumericDate` | Marca de tiempo de emisión del token (Issued At). |
 | `exp` | `NumericDate` | Marca de tiempo de expiración (Expiration Time). |
 
 ---
+
 
 ## 3. Ciclo de Vida del Token
 

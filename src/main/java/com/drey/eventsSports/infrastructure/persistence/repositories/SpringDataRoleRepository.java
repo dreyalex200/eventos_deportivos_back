@@ -4,10 +4,13 @@ import com.drey.eventsSports.infrastructure.persistence.entities.RoleJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface SpringDataRoleRepository extends JpaRepository<RoleJpaEntity, Long> {
     Optional<RoleJpaEntity> findByCode(String code);
+    List<RoleJpaEntity> findByCodeIn(Collection<String> codes);
     boolean existsByCode(String code);
 }

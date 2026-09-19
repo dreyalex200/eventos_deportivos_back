@@ -3,7 +3,7 @@
 - **ID de Funcionalidad**: FUNC-AUTH-LOGIN
 - **Capa**: Anonymous / Inbound Controller / Hexagonal Application
 - **Método**: `POST`
-- **Ruta**: `/api/v1/auth/login`
+- **Ruta**: `/api/v1/auth/anonymous/login` (soporta también `/api/v1/auth/login` para retrocompatibilidad)
 - **Autenticación requerida**: Ninguna (Pública / Anónima)
 - **Consumo de datos**: `application/json`
 - **Producción de datos**: `application/json`
@@ -12,7 +12,7 @@
 
 ## 1. Descripción y Propósito
 
-Provee el punto de entrada para que los administradores y usuarios del sistema se autentiquen en el microservicio deportivo (`api_events_sports`). Al enviar credenciales válidas (correo electrónico y contraseña en texto plano), el servicio valida la identidad del usuario, verifica que la cuenta se encuentre activa, comprueba que cuente con privilegios de administrador (`ADMIN`), actualiza la marca temporal del último acceso (`last_login_at`) y emite un token JWT con firma HMAC-SHA256 para autorizar solicitudes subsecuentes en los endpoints protegidos.
+Provee el punto de entrada para que los administradores y usuarios del sistema se autentiquen en el microservicio deportivo (`api_events_sports`). Al enviar credenciales válidas (correo electrónico y contraseña en texto plano), el servicio valida la identidad del usuario, verifica que la cuenta se encuentre activa, comprueba que cuente con privilegios de administrador (`ADMIN`), actualiza la marca temporal del último acceso (`last_login_at`), resuelve los roles y permisos efectivos del usuario y emite un token JWT firmado mediante HMAC-SHA256 con claims de autorización (roles y permisos) para autorizar solicitudes subsecuentes en los endpoints protegidos.
 
 ---
 

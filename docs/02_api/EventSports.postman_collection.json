@@ -123,9 +123,80 @@
 											"value": "application/json"
 										}
 									],
+									"cookie": [],
 									"body": "{\n    \"success\": true,\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n        \"tokenType\": \"Bearer\",\n        \"expiresIn\": 86400,\n        \"user\": {\n            \"id\": 1,\n            \"email\": \"admin@sportsevents.com\",\n            \"roles\": [\n                \"ADMIN\"\n            ]\n        }\n    },\n    \"timestamp\": \"2026-09-12T10:17:44Z\",\n    \"requestId\": \"195eabcd-17c4-4e39-a53c-bd42cea4dac2\"\n}"
 								}
 							]
+						},
+						{
+							"name": "Login - Anonymous Endpoint (Success)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response has success envelope and token\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"    pm.expect(jsonData.status).to.eql(\"success\");",
+											"    pm.expect(jsonData.data).to.have.property(\"accessToken\");",
+											"    pm.expect(jsonData.data.tokenType).to.eql(\"Bearer\");",
+											"    pm.expect(jsonData.data.user.email).to.eql(\"admin@sportsevents.com\");",
+											"    ",
+											"    // Automatically update collection auth_token variable",
+											"    pm.collectionVariables.set(\"auth_token\", jsonData.data.accessToken);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/anonymous/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"anonymous",
+										"login"
+									]
+								},
+								"description": "Authenticates the user via the explicit anonymous route /api/v1/auth/anonymous/login. Returns JWT bearer access token with effective roles and permissions."
+							},
+							"response": []
 						},
 						{
 							"name": "Login - Invalid Password (401)",
@@ -807,6 +878,71 @@
 					"name": "Users",
 					"description": "User management and profile endpoints.",
 					"item": [
+						{
+							"name": "Create User (Protected)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"User created successfully with envelope\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"    pm.expect(jsonData.status).to.eql(\"success\");",
+											"    pm.expect(jsonData.data).to.have.property(\"id\");",
+											"    pm.expect(jsonData.data.email).to.eql(\"operator1@sportsevents.com\");",
+											"    pm.expect(jsonData.data).to.not.have.property(\"password\");",
+											"    pm.expect(jsonData.data).to.not.have.property(\"passwordHash\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"operator1\",\n    \"email\": \"operator1@sportsevents.com\",\n    \"password\": \"Password123+\",\n    \"firstName\": \"Operator\",\n    \"lastName\": \"User\",\n    \"phone\": \"+573001234567\",\n    \"roles\": [\"OPERATOR\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/users/protected/users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"protected",
+										"users"
+									]
+								},
+								"description": "Creates a new user in the platform. Protected by JWT Bearer token and requires USERS_CREATE permission."
+							},
+							"response": []
+						},
 						{
 							"name": "Get User Profile",
 							"request": {

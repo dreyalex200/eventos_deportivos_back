@@ -131,6 +131,36 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(com.drey.eventsSports.domain.model.exceptions.DuplicateEmailException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEmail(com.drey.eventsSports.domain.model.exceptions.DuplicateEmailException ex) {
+        ErrorResponse response = ErrorResponse.builder()
+                .status("error")
+                .error(ErrorResponse.ErrorDetails.builder()
+                        .code("DUPLICATE_RESOURCE")
+                        .details(ex.getMessage())
+                        .build())
+                .timestamp(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(com.drey.eventsSports.domain.model.exceptions.DuplicateUsernameException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateUsername(com.drey.eventsSports.domain.model.exceptions.DuplicateUsernameException ex) {
+        ErrorResponse response = ErrorResponse.builder()
+                .status("error")
+                .error(ErrorResponse.ErrorDetails.builder()
+                        .code("DUPLICATE_RESOURCE")
+                        .details(ex.getMessage())
+                        .build())
+                .timestamp(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         ErrorResponse response = ErrorResponse.builder()
