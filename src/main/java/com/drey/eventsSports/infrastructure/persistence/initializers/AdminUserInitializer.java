@@ -10,6 +10,7 @@ import com.drey.eventsSports.infrastructure.persistence.entities.RoleJpaEntity;
 import com.drey.eventsSports.infrastructure.persistence.repositories.SpringDataPermissionRepository;
 import com.drey.eventsSports.infrastructure.persistence.repositories.SpringDataRoleRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -47,6 +48,7 @@ public class AdminUserInitializer implements ApplicationRunner {
     private final SpringDataPermissionRepository springDataPermissionRepository;
     private final PasswordEncoderPort passwordEncoderPort;
 
+    @Autowired
     public AdminUserInitializer(
             @Value("${app.security.admin.email:" + DEFAULT_ADMIN_EMAIL + "}") String adminEmail,
             @Value("${app.security.admin.password:" + DEFAULT_ADMIN_PASSWORD + "}") String adminPassword,
