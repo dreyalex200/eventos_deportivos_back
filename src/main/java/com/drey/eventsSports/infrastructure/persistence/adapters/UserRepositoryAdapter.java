@@ -110,11 +110,14 @@ public class UserRepositoryAdapter implements UserRepository {
         Set<RoleJpaEntity> roleEntities = new HashSet<>();
         if (user.getRoles() != null) {
             for (Role r : user.getRoles()) {
+                Optional<RoleJpaEntity> roleEntityOpt = Optional.empty();
                 if (r.getId() != null) {
-                    springDataRoleRepository.findById(r.getId()).ifPresent(roleEntities::add);
-                } else if (r.getCode() != null) {
-                    springDataRoleRepository.findByCode(r.getCode()).ifPresent(roleEntities::add);
+                    roleEntityOpt = springDataRoleRepository.findById(r.getId());
                 }
+                if (roleEntityOpt.isEmpty() && r.getCode() != null) {
+                    roleEntityOpt = springDataRoleRepository.findByCode(r.getCode());
+                }
+                roleEntityOpt.ifPresent(roleEntities::add);
             }
         }
 
