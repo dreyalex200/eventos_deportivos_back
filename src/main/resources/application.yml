@@ -9,19 +9,11 @@ spring:
   profiles:
     active: ${database.provider:mysql}
 
-  rabbitmq:
-    enabled: ${RABBITMQ_ENABLED:false}
-    host: ${RABBITMQ_HOST:iris.drey.com}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USER:infrastructure@drey.com}
-    password: ${RABBITMQ_PASSWORD:cJ:#TGy36L8d4N;S}
-    virtual-host: ${RABBITMQ_VHOST:/}
-
   mail:
-    host: ${MAIL_HOST:smtp.zoho.com}
+    host: ${MAIL_HOST:smtp.mail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:no-reply@drey.com}
-    password: ${MAIL_PASSWORD:V.FcJh_281%Sz!IQ%ddf}
+    username: ${MAIL_USERNAME:[EMAIL_ADDRESS]}
+    password: ${MAIL_PASSWORD:[PASSWORD]}
     properties:
       mail:
         smtp:
@@ -42,19 +34,6 @@ spring:
   web:
     resources:
       add-mappings: false
-
-app:
-  api:
-    base-path: ${APP_API_BASE_PATH:/api/v1}
-  security:
-    jwt:
-      secret: ${JWT_SECRET:3cfa76ef14937c1c0ea519f8fc057a80fcd04a74ac2b9bd91000223f108f3e58}
-      expiration: ${JWT_EXPIRATION:86400}
-  assets:
-    base-url: ${APP_ASSETS_BASE_URL:https://atlas-api.drey.com/arcadion-realm/assets/enterprise}
-  email:
-    from-email: ${APP_EMAIL_FROM_EMAIL:no-reply@drey.com}
-    from-name: ${APP_EMAIL_FROM_NAME:drey}
 
 providers:
   smtp:
@@ -91,10 +70,17 @@ server:
     whitelabel:
       enabled: false
 
-bird:
-  api:
-    access-key: ${BIRD_API_ACCESS_KEY:}
-    workspace-id: ${BIRD_WORKSPACE_ID:1703a446-f76d-4de6-bcba-c564826fcd95}
-    channels:
-      sms: ${BIRD_CHANNEL_SMS:52e1b56d-5932-52cb-9cd9-7868017bef2f}
-      whatsapp: ${BIRD_CHANNEL_WHATSAPP:708525ee-c3f4-5f89-b61a-b5b5cd35c9d0}
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:3cfa76ef14937c1c0ea519f8fc057a80fcd04a74ac2b9bd91000223f108f3e58}
+      expiration: ${JWT_EXPIRATION:86400}
+    admin:
+      email: ${ADMIN_USER_EMAIL:admin@sportsevents.com}
+      password: ${ADMIN_USER_PASSWORD:Prueba123+}
+      username: ${ADMIN_USER_USERNAME:admin}
+      first-name: ${ADMIN_USER_FIRST_NAME:Admin}
+      last-name: ${ADMIN_USER_LAST_NAME:SportsEvents}
+      phone: ${ADMIN_USER_PHONE:+573001234567}
+      role: ${ADMIN_USER_ROLE:ADMIN}
+
