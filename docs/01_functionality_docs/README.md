@@ -14,21 +14,21 @@ Endpoints que no requieren cabecera `Authorization: Bearer <token>` para su invo
 
 ---
 
-### 2. Endpoints Protegidos (`protected/`)
-Endpoints asegurados mediante token JWT Bearer en el encabezado HTTP:
+### 2. Endpoints y Seguridad Protegida (`protected/`)
+Mecanismos de seguridad, endpoints activos y especificaciones de módulos protegidos:
 
-- [Seguridad y Autenticación JWT](./protected/jwt_authentication_and_security.md): Arquitectura de seguridad, estructura de claims, ciclo de vida del token, filtros de seguridad y política CORS.
-- [Gestión de Eventos Deportivos](./protected/events_management.md): Catálogo y operaciones CRUD para eventos deportivos.
-- [Perfil y Gestión de Usuarios](./protected/users_management.md): Consulta de perfiles y resguardo de datos sensibles.
+- [Seguridad y Autenticación JWT](./protected/jwt_authentication_and_security.md): Arquitectura de seguridad stateless, estructura real de claims JJWT, mecanismos de autenticación (JWT Bearer y S2S App Token), autorización basada en roles y permisos (RBAC/PBAC), ciclo de vida del token y política CORS.
+- [Gestión de Usuarios](./protected/users_management.md): Operación implementada de creación de usuarios (`POST /api/v1/users/protected/users`), validaciones de entrada, encriptación BCrypt, asignación de roles y catálogo de operaciones en backlog.
+- [Gestión de Eventos Deportivos](./protected/events_management.md): Estado de implementación (Backlog), modelo relacional preparado en base de datos MySQL y especificación funcional de endpoints proyectados.
 
 ---
 
 ## 🧪 Colección de Postman
 
-La colección completa de Postman lista para importar se encuentra ubicada en:
+La colección de Postman lista para importar se encuentra ubicada en:
 [`docs/02_api/EventSports.postman_collection.json`](../02_api/EventSports.postman_collection.json)
 
 Incluye:
 - Variables preconfiguradas (`baseUrl`, `admin_email`, `admin_password`).
 - Pruebas automatizadas (test scripts) que capturan el token JWT y lo asignan automáticamente a `auth_token`.
-- Muestras de respuestas exitosas (200, 201) y de error (400, 401, 403).
+- Muestras de respuestas exitosas (200, 201) y de error (400, 401, 403, 409).
