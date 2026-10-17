@@ -184,7 +184,7 @@ Los claims emitidos por [`JwtUtils.generateToken`](file:///d:/proyecto/src/back/
 
 ## 4. Parámetros de Configuración y Ciclo de Vida del Token
 
-Los parámetros de seguridad se definen en [`application.yml`](file:///d:/proyecto/src/back/api_events_sports/src/main/resources/application.yml) bajo el prefijo `app.security.jwt`:
+Los parámetros de seguridad JWT se definen en [`application.yml`](file:///d:/proyecto/src/back/api_events_sports/src/main/resources/application.yml) bajo el prefijo `app.security.jwt`:
 
 ```yaml
 app:
@@ -192,10 +192,22 @@ app:
     jwt:
       secret: ${JWT_SECRET:3cfa76ef14937c1c0ea519f8fc057a80fcd04a74ac2b9bd91000223f108f3e58}
       expiration: ${JWT_EXPIRATION:86400} # Expiración en segundos (86400 s = 24 horas)
-    app-token: ${APP_SECURITY_TOKEN:}
-    app-token-header: ${APP_TOKEN_HEADER:X-App-Token}
-    app-scope-header: ${APP_SCOPE_HEADER:X-Scope-Id}
 ```
+
+Los parámetros del mecanismo S2S (Service-to-Service) **no están declarados en `application.yml`**; se configuran directamente como valores por defecto en las anotaciones `@Value` del filtro [`JwtAuthenticationFilter`](file:///d:/proyecto/src/back/api_events_sports/src/main/java/com/drey/eventsSports/infrastructure/config/JwtAuthenticationFilter.java):
+
+```java
+@Value("${app.security.app-token:}")          // Token de aplicación (vacío por defecto = deshabilitado)
+private String appToken;
+
+@Value("${app.security.app-token-header:X-App-Token}")  // Nombre del header S2S
+private String appTokenHeader;
+
+@Value("${app.security.app-scope-header:X-Scope-Id}")   // Nombre del header de scope
+private String appScopeHeader;
+```
+
+Para habilitar la autenticación S2S en un entorno, basta con definir la variable de entorno `APP_SECURITY_TOKEN` con un valor no vacío.
 
 ### Reglas de Configuración:
 - **Expiración (`expiration`)**: La unidad de configuración en `JwtUtils` es en **segundos**. El valor predeterminado es `86400` segundos (24 horas).

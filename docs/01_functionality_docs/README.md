@@ -10,7 +10,7 @@ Este directorio documenta de forma exhaustiva las capacidades funcionales del mi
 Endpoints que no requieren cabecera `Authorization: Bearer <token>` para su invocación:
 
 - [Autenticación de Administrador (Login)](./anonymous/authentication.md): Inicio de sesión con credenciales, validaciones, ciclo de emisión JWT y manejo uniforme de errores.
-- [Diagnóstico y Monitoreo (Actuator)](./anonymous/health_and_monitoring.md): Verificación de disponibilidad (`/actuator/health`) e información del sistema (`/actuator/info`).
+- [Diagnóstico y Monitoreo (Actuator)](./anonymous/health_and_monitoring.md): Verificación de disponibilidad (`/actuator/health`, `/actuator/health/liveness`, `/actuator/health/readiness`), información del sistema (`/actuator/info`), métricas JVM (`/actuator/metrics`) y endpoint de scraping Prometheus (`/actuator/prometheus`).
 
 ---
 

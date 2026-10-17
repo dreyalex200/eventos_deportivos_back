@@ -12,7 +12,7 @@
 
 ## 1. Descripción y Propósito
 
-Provee el punto de entrada para que los administradores y usuarios del sistema se autentiquen en el microservicio deportivo (`api_events_sports`). Al enviar credenciales válidas (correo electrónico y contraseña en texto plano), el servicio valida la identidad del usuario, verifica que la cuenta se encuentre activa, comprueba que cuente con privilegios de administrador (`ADMIN`), actualiza la marca temporal del último acceso (`last_login_at`), resuelve los roles y permisos efectivos del usuario y emite un token JWT firmado mediante HMAC-SHA256 con claims de autorización (roles y permisos) para autorizar solicitudes subsecuentes en los endpoints protegidos.
+Provee el punto de entrada para que los administradores del sistema se autentiquen en el microservicio deportivo (`api_events_sports`). Al enviar credenciales válidas (correo electrónico y contraseña en texto plano), el servicio valida la identidad del usuario, verifica que la cuenta se encuentre activa, comprueba que cuente con privilegios de administrador (`ADMIN`), resuelve los roles y permisos efectivos del usuario y emite un token JWT firmado mediante HMAC-SHA256 con claims de autorización (roles y permisos) para autorizar solicitudes subsecuentes en los endpoints protegidos.
 
 ---
 
@@ -82,8 +82,6 @@ sequenceDiagram
 
     UC->>P_Tok: generateToken(user)
     P_Tok-->>UC: JWT String
-    UC->>P_User: save(user con lastLoginAt actualizado)
-    P_User->>DB: UPDATE users SET last_login_at = ?
     UC-->>C: LoginResult (Token, Expiration, UserDto)
     C-->>Cliente: 200 OK (ApiResponse Envelope)
 ```
