@@ -26,7 +26,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +36,9 @@ class UserControllerTest {
 
     @Mock
     private CreateUserUseCase createUserUseCase;
+
+    @Mock
+    private com.drey.eventsSports.domain.ports.inbound.GetCurrentUserUseCase getCurrentUserUseCase;
 
     @InjectMocks
     private UserController userController;
@@ -219,5 +222,32 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.status", is("error")))
                 .andExpect(jsonPath("$.error.code", is("DUPLICATE_RESOURCE")))
                 .andExpect(jsonPath("$.error.details", containsString("existinguser")));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/users/me returns 200 OK with authenticated user profile")
+    void shouldReturn200WhenGettingCurrentUser() throws Exception {
+        when(getCurrentUserUseCase.getCurrentUser(5L)).thenReturn(savedUser);
+
+        mockMvc.perform(get("/api/v1/users/me")
+                        .requestAttr("user_id", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is("success")))
+                .andExpect(jsonPath("$.data.id", is(5)))
+                .andExpect(jsonPath("$.data.email", is("operator@sportsevents.com")))
+                .andExpect(jsonPath("$.data.username", is("newoperator")));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/users/me returns 404 Not Found when user is not found")
+    void shouldReturn404WhenCurrentUserNotFound() throws Exception {
+        when(getCurrentUserUseCase.getCurrentUser(99L))
+                .thenThrow(new com.drey.eventsSports.domain.model.exceptions.UserNotFoundException("User not found with id: 99"));
+
+        mockMvc.perform(get("/api/v1/users/me")
+                        .requestAttr("user_id", "99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is("error")))
+                .andExpect(jsonPath("$.error.code", is("USER_NOT_FOUND")));
     }
 }

@@ -161,6 +161,36 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(com.drey.eventsSports.domain.model.exceptions.UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(com.drey.eventsSports.domain.model.exceptions.UserNotFoundException ex) {
+        ErrorResponse response = ErrorResponse.builder()
+                .status("error")
+                .error(ErrorResponse.ErrorDetails.builder()
+                        .code("USER_NOT_FOUND")
+                        .details(ex.getMessage())
+                        .build())
+                .timestamp(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(com.drey.eventsSports.domain.model.exceptions.EventNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEventNotFound(com.drey.eventsSports.domain.model.exceptions.EventNotFoundException ex) {
+        ErrorResponse response = ErrorResponse.builder()
+                .status("error")
+                .error(ErrorResponse.ErrorDetails.builder()
+                        .code("EVENT_NOT_FOUND")
+                        .details(ex.getMessage())
+                        .build())
+                .timestamp(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         ErrorResponse response = ErrorResponse.builder()

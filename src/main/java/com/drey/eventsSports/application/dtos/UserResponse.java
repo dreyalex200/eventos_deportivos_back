@@ -15,8 +15,23 @@ public record UserResponse(
         Integer status,
         List<String> roles,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+        LocalDateTime lastLoginAt,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
         LocalDateTime createdAt,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
         LocalDateTime updatedAt
 ) {
+    public UserResponse(
+            Long id,
+            String username,
+            String email,
+            String firstName,
+            String lastName,
+            String phone,
+            Integer status,
+            List<String> roles,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        this(id, username, email, firstName, lastName, phone, status, roles, null, createdAt, updatedAt);
+    }
 }

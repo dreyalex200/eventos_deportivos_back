@@ -97,14 +97,14 @@ Cuando se implemente el módulo de eventos en la capa de adaptadores y aplicaci�
 
 ### 4.1. Resumen de Endpoints Previstos
 
-| Operación Proyectada | Método HTTP | Ruta Propuesta | Rol / Permiso Previsto | Estado |
+| Operación | Método HTTP | Ruta | Rol / Permiso Previsto | Estado |
 | :--- | :--- | :--- | :--- | :--- |
-| **Listar Eventos Paginados** | `GET` | `/api/v1/events` | Autenticado (`USERS_READ` o público con filtro) | ❌ Pendiente de Implementación |
-| **Consultar Detalle de Evento** | `GET` | `/api/v1/events/{id}` | Autenticado | ❌ Pendiente de Implementación |
-| **Crear Evento Deportivo** | `POST` | `/api/v1/events` | Authority `EVENTS_CREATE` / Rol `ADMIN` | ❌ Pendiente de Implementación |
-| **Actualizar Evento Deportivo** | `PUT` | `/api/v1/events/{id}` | Authority `EVENTS_UPDATE` / Rol `ADMIN` | ❌ Pendiente de Implementación |
+| **Listar Eventos Paginados** | `GET` | `/api/v1/events` | Autenticado (`Bearer <JWT>`) | ✅ Implementado |
+| **Consultar Detalle de Evento** | `GET` | `/api/v1/events/{id}` | Autenticado (`Bearer <JWT>`) | ✅ Implementado |
+| **Crear Evento Deportivo** | `POST` | `/api/v1/events` | Autenticado (`Bearer <JWT>`) | ✅ Implementado |
+| **Actualizar Evento Deportivo** | `PUT` | `/api/v1/events/{id}` | Autenticado (`Bearer <JWT>`) | ✅ Implementado |
 | **Cambiar Estado de Evento** | `PATCH` | `/api/v1/events/{id}/status` | Authority `EVENTS_STATUS_CHANGE` | ❌ Pendiente de Implementación |
-| **Eliminar Evento (Soft Delete)** | `DELETE` | `/api/v1/events/{id}` | Authority `EVENTS_DELETE` / Rol `ADMIN` | ❌ Pendiente de Implementación |
+| **Eliminar Evento (Soft Delete)** | `DELETE` | `/api/v1/events/{id}` | Autenticado (`Bearer <JWT>`) | ✅ Implementado |
 
 ---
 

@@ -33,6 +33,8 @@ La clase controladora [`UserController`](file:///d:/proyecto/src/back/api_events
 
 | Método | Ruta | Propósito | Autorización Exigida |
 | :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/users/me` | Consulta del perfil del usuario actualmente autenticado | Autenticado (`Bearer <JWT>`) |
+| `GET` | `/api/v1/users/protected/me` | Alias de consulta del perfil autenticado | Autenticado (`Bearer <JWT>`) |
 | `POST` | `/api/v1/users/protected/users` | Creación de nuevo usuario (Ruta canónica protegida) | Authority `USERS_CREATE` |
 | `POST` | `/api/v1/users/protected` | Creación de nuevo usuario (Alias sobre sub-ruta) | Authority `USERS_CREATE` |
 | `POST` | `/api/v1/users` | Creación de nuevo usuario (Alias sobre prefijo base) | Authority `USERS_CREATE` |
